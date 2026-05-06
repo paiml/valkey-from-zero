@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" width="720" height="320">
+<!-- Module 4 — Pipelines, transactions & Lua scripts. Purple accent (#9c84ff). -->
+
+<defs>
+  <style>
+    .h { font-family: 'Segoe UI', sans-serif; }
+    .m { font-family: 'Cascadia Code', 'Fira Code', monospace; }
+    .label { font-family: 'Segoe UI', sans-serif; letter-spacing: 0.10em; }
+  </style>
+  <radialGradient id="bg-m4" cx="30%" cy="30%" r="90%">
+    <stop offset="0%" stop-color="#1a2540"/>
+    <stop offset="100%" stop-color="#0e1726"/>
+  </radialGradient>
+  <linearGradient id="accent-m4" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#9c84ff" stop-opacity="0.95"/>
+    <stop offset="100%" stop-color="#b8acff" stop-opacity="0.85"/>
+  </linearGradient>
+</defs>
+
+<rect width="720" height="320" fill="url(#bg-m4)"/>
+<rect x="0" y="0" width="720" height="4" fill="url(#accent-m4)"/>
+<rect x="0" y="0" width="6" height="320" fill="#9c84ff"/>
+
+<g class="h">
+  <text x="32" y="56" font-size="14" letter-spacing="0.16em" font-weight="700" fill="#9c84ff">MODULE 4 · 5 LESSONS</text>
+  <text x="32" y="98" font-size="30" font-weight="700" fill="#eeeeee">Pipelines, MULTI</text>
+  <text x="32" y="132" font-size="30" font-weight="700" fill="#eeeeee">&amp; Lua Scripts</text>
+  <text x="32" y="166" font-size="14" fill="#b8acff" letter-spacing="0.05em">Pipeline · MULTI · WATCH · EVAL · deadpool-redis</text>
+</g>
+
+<g id="m4-lua" transform="translate(420, 50)">
+  <rect x="0" y="0" width="270" height="135" rx="8" fill="#0e1726" stroke="#9c84ff" stroke-width="2.5"/>
+  <rect x="0" y="0" width="270" height="24" rx="8" fill="#1a1d23"/>
+  <text x="14" y="18" class="m" font-size="11" font-weight="700" fill="#9c84ff">EVAL · atomic stock decrement</text>
+  <text x="16" y="44" class="m" font-size="11" fill="#b8acff">local s = redis.call('GET', KEYS[1])</text>
+  <text x="16" y="60" class="m" font-size="11" fill="#b8acff">if tonumber(s) &gt;= 1 then</text>
+  <text x="16" y="76" class="m" font-size="11" fill="#b8acff">  return redis.call('DECR', KEYS[1])</text>
+  <text x="16" y="92" class="m" font-size="11" fill="#b8acff">else</text>
+  <text x="16" y="108" class="m" font-size="11" fill="#ff5630">  return -1  -- out of stock</text>
+  <text x="16" y="124" class="m" font-size="11" fill="#b8acff">end</text>
+</g>
+
+<g id="m4-latency" transform="translate(420, 200)">
+  <rect x="0" y="0" width="270" height="86" rx="8" fill="#0e1726" stroke="#9c84ff" stroke-width="2.5"/>
+  <text x="14" y="20" class="m" font-size="11" font-weight="700" fill="#9c84ff">p99 LATENCY</text>
+  <text x="14" y="42" class="m" font-size="12" fill="#ffab00">WATCH/MULTI: 4 round-trips</text>
+  <text x="14" y="60" class="m" font-size="12" fill="#7ee787">EVAL Lua:    1 round-trip</text>
+  <text x="14" y="78" class="m" font-size="11" fill="#a5d6ff">measured via criterion</text>
+</g>
+
+<g id="capstone-m4" transform="translate(32, 210)">
+  <rect x="0" y="0" width="360" height="68" rx="6" fill="#161b22" stroke="#7ee787" stroke-width="1.5" fill-opacity="0.6"/>
+  <text x="14" y="22" class="label" font-size="11" font-weight="700" fill="#7ee787">MINI-CAPSTONE</text>
+  <text x="14" y="44" class="m" font-size="13" fill="#eeeeee">atomic stock-decrement service</text>
+  <text x="14" y="60" class="m" font-size="13" fill="#b8acff">EVAL vs WATCH benchmarked w/ criterion</text>
+</g>
+</svg>
