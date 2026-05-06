@@ -1,0 +1,160 @@
+metadata:
+  version: 1.0.0
+  created: '2026-05-06'
+  author: 'PAIML Engineering'
+  description: |
+    Provable contracts for the valkey-core scaffold of paiml/valkey-from-zero
+    (Coursera "Valkey from Zero" course companion, course #11 of the Rust for
+    Data Engineering specialization).
+
+    Four named runtime invariants asserted inside the Module-1 demo functions
+    (set_get_round_trip, incr_monotonic, set_with_ttl, hash_round_trip). Each
+    contract is asserted at runtime in crates/valkey-core/src/lib.rs and
+    proved by the integration tests in tests/integration.rs (which require a
+    live Valkey instance via `make up`).
+
+    A fifth contract (XACK-after-commit) is reserved for the Module-3
+    streams expansion and will be appended when that crate lands.
+  references:
+    - 'valkey-from-zero README §Provable contracts'
+    - 'paiml/duckdb-from-zero contracts/duckdb-rust-v1.yaml — sibling spec'
+    - 'paiml/mysql-from-zero contracts/mysql-rust-v1.yaml — sibling spec'
+
+equations:
+  set_get_round_trip:
+    formula: 'GET(SET(k, v)) == v'
+    domain: 'k ∈ String, v ∈ String'
+    codomain: 'bool'
+    lean_theorem: Theorems.ValkeyCore.SetGetRoundTrip
+    postconditions:
+    - 'GET(k) == v immediately after SET(k, v)'
+
+  incr_monotonic:
+    formula: 'INCR(k) == GET_or_zero(k) + 1'
+    domain: 'k ∈ String, valkey state arbitrary'
+    codomain: 'bool'
+    lean_theorem: Theorems.ValkeyCore.IncrMonotonic
+    postconditions:
+    - 'after = (before ?? 0) + 1'
+
+  ttl_set_expires:
+    formula: '0 ≤ TTL(k) ≤ ttl after SET(k, v, EX=ttl)'
+    domain: 'k ∈ String, v ∈ String, ttl ∈ uint > 0'
+    codomain: 'bool'
+    lean_theorem: Theorems.ValkeyCore.TtlSetExpires
+    postconditions:
+    - 'TTL(k) ∈ [0, ttl_secs] immediately after SET EX'
+
+  hash_round_trip:
+    formula: 'HGETALL(HSET(k, fields)) == fields'
+    domain: 'k ∈ String, fields ∈ HashMap<String, String>'
+    codomain: 'bool'
+    lean_theorem: Theorems.ValkeyCore.HashRoundTrip
+    postconditions:
+    - 'HGETALL(k).len() == fields.len()'
+    - 'forall (f, v) in fields. HGETALL(k)[f] == v'
+
+proof_obligations:
+  # C1 set_get_round_trip ─────────────────────────────────
+  - type: postcondition
+    property: 'GET after SET returns the value SET'
+    formal: 'GET(k) == v after SET(k, v)'
+    applies_to: set_get_round_trip
+  # C2 incr_monotonic ────────────────────────────────────
+  - type: postcondition
+    property: 'INCR returns previous-value plus one'
+    formal: 'after == (before ?? 0) + 1'
+    applies_to: incr_monotonic
+  # C3 ttl_set_expires ───────────────────────────────────
+  - type: invariant
+    property: 'TTL after SET EX is bounded by the requested seconds'
+    formal: '0 <= TTL(k) <= ttl_secs'
+    applies_to: set_with_ttl
+  # C4 hash_round_trip ───────────────────────────────────
+  - type: postcondition
+    property: 'HGETALL returns every field set by HSET with the same value'
+    formal: 'forall (f, v) in fields. HGETALL(k)[f] == v'
+    applies_to: hash_round_trip
+
+enforcement:
+  set_get_round_trip:
+    description: 'A SET followed by a GET on the same key must return the value SET. The single-most foundational invariant — if this fails, the connection is talking to the wrong server or the key namespace was clobbered.'
+    check: 'C1 assert_eq!(got, value) inside set_get_round_trip()'
+    severity: 'ERROR'
+
+  incr_monotonic:
+    description: 'INCR must return the new value, equal to the previous value (zero if absent) plus one. Establishes the atomic-counter primitive Module 1.3 builds on.'
+    check: 'C2 assert_eq!(after, before.unwrap_or(0) + 1)'
+    severity: 'ERROR'
+
+  ttl_set_expires:
+    description: 'After SET EX ttl, the TTL command must return a value in [0, ttl]. Bounds the eviction-window content of Module 1.3 and Module 5.1.'
+    check: 'C3 assert!(ttl >= 0 && (ttl as u64) <= ttl_secs)'
+    severity: 'ERROR'
+
+  hash_round_trip:
+    description: 'HGETALL after HSET-of-multiple-fields must return all fields with their set values. Sentinel for the hash data type Module 1.4 introduces.'
+    check: 'C4 loop assertion on HGETALL output against the input field slice'
+    severity: 'ERROR'
+
+falsification_tests:
+  - id: FALSIFY-VALKEY-001
+    rule: 'GET after SET returns the value SET'
+    prediction: 'For any (key, value) and a healthy Valkey instance, GET(key) == value within the same connection scope.'
+    test: 'integration::integration_c1_set_get_round_trip; lib::tests cover the negative-path open() failures.'
+    if_fails: 'Connection is talking to the wrong instance, key namespace was clobbered, or the server lost the write before the read (AOF/RDB durability bug).'
+
+  - id: FALSIFY-VALKEY-002
+    rule: 'INCR returns previous value plus one'
+    prediction: 'INCR(k) == (GET(k) ?? 0) + 1 read in the same connection, no concurrent writers.'
+    test: 'integration::integration_c2_incr_monotonic verifies three consecutive INCRs return 1, 2, 3.'
+    if_fails: 'Atomic counter contract broken — key contains a non-integer string, or a concurrent client raced.'
+
+  - id: FALSIFY-VALKEY-003
+    rule: 'TTL after SET EX is bounded by the requested seconds'
+    prediction: 'After SET k v EX 60, TTL(k) returns a value in [0, 60].'
+    test: 'integration::integration_c3_set_with_ttl asserts (0..=60).contains(&ttl).'
+    if_fails: 'Server clock skew, TTL command returning -1 (no expiry set), or -2 (key missing) — all data-loss signals.'
+
+  - id: FALSIFY-VALKEY-004
+    rule: 'HGETALL returns every field HSET'
+    prediction: 'HGETALL(k) yields a HashMap whose keys equal the HSET field set and whose values equal the HSET value list, pairwise.'
+    test: 'integration::integration_c4_hash_round_trip verifies a 2-field HSET round-trips through HGETALL.'
+    if_fails: 'Field collision (key was already a non-hash type), eviction mid-test (maxmemory-policy), or HSET partial failure.'
+
+qa_gate:
+  id: F-VALKEY-001
+  name: 'Valkey Core Contract'
+  description: 'Four runtime invariants asserted in the Module-1 demo functions of crates/valkey-core after a successful round-trip against a live Valkey instance.'
+  checks:
+    - 'set_get_round_trip'
+    - 'incr_monotonic'
+    - 'ttl_set_expires'
+    - 'hash_round_trip'
+  pass_criteria: 'All four falsification tests pass on the canonical Valkey 8 docker image; runtime asserts never fire on the happy path; lib::tests catch malformed-URL and unreachable-host failures of open().'
+
+kani_harnesses:
+  - id: KANI-VALKEY-001
+    obligation: 'GET after SET returns the value SET'
+    property: 'forall (k, v). GET(SET(k, v)) == v'
+    bound: 4
+    strategy: exhaustive
+    harness: verify_set_get_round_trip
+  - id: KANI-VALKEY-002
+    obligation: 'INCR returns previous + 1'
+    property: 'forall k. INCR(k) == (GET(k) ?? 0) + 1'
+    bound: 4
+    strategy: exhaustive
+    harness: verify_incr_monotonic
+  - id: KANI-VALKEY-003
+    obligation: 'TTL bounded by EX argument'
+    property: 'forall (k, v, ttl). 0 <= TTL(k) <= ttl after SET k v EX ttl'
+    bound: 4
+    strategy: exhaustive
+    harness: verify_ttl_set_expires
+  - id: KANI-VALKEY-004
+    obligation: 'HGETALL round-trips HSET'
+    property: 'forall (k, fields). HGETALL(k) == fields after HSET-multi(k, fields)'
+    bound: 4
+    strategy: exhaustive
+    harness: verify_hash_round_trip

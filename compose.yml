@@ -1,0 +1,41 @@
+services:
+  valkey:
+    image: valkey/valkey:8
+    container_name: valkey-from-zero
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      # Named volume — Docker manages lifecycle. AOF persistence is enabled
+      # below; without a volume the data dies with the container.
+      - valkey_data:/data
+    command:
+      - "valkey-server"
+      # AOF on so the persistence lessons (Module 5.1) have something to point
+      # at. The performance hit at this dataset size is irrelevant; turning it
+      # off is one config change away.
+      - "--appendonly"
+      - "yes"
+      # Lower the AOF fsync interval from the default of 1s; the lessons want
+      # to talk about durability tradeoffs and "every second" is the canonical
+      # default to compare against.
+      - "--appendfsync"
+      - "everysec"
+      # Reasonable max-memory + LRU eviction so the cache lessons (Module 1)
+      # have observable eviction without needing to fill 8GB of fake data.
+      - "--maxmemory"
+      - "256mb"
+      - "--maxmemory-policy"
+      - "allkeys-lru"
+    healthcheck:
+      test: ["CMD-SHELL", "valkey-cli ping | grep -q PONG"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+volumes:
+  valkey_data:
+
+# Sentinel / Cluster topology for Module 5 lives in compose.cluster.yml
+# (deferred until Module 5 content lands). The single-node service above is
+# enough for Modules 1–4 plus the course-level capstone's happy path.

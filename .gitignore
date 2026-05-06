@@ -1,0 +1,9 @@
+/target/
+/.pmat/
+/.pmat-metrics/
+/.pv/
+/.cargo/
+contracts/.pv/
+.DS_Store
+*.rdb
+appendonlydir/

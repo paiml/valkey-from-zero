@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 480" width="1280" height="480">
+<!-- HERO — paiml/valkey-from-zero README banner.
+     Visual story: redis-rs client → Valkey 8 server → Streams + consumer
+     groups (the data-engineering primitive Module 3 leans on). Same
+     oxide-premium chassis as the mysql-from-zero / duckdb-from-zero heroes. -->
+
+<defs>
+  <style>
+    .h { font-family: 'Segoe UI', 'Helvetica Neue', sans-serif; }
+    .m { font-family: 'Cascadia Code', 'Fira Code', monospace; }
+    .label { font-family: 'Segoe UI', sans-serif; letter-spacing: 0.12em; }
+  </style>
+
+  <radialGradient id="bg" cx="50%" cy="40%" r="80%">
+    <stop offset="0%" stop-color="#1a2540"/>
+    <stop offset="100%" stop-color="#0e1726"/>
+  </radialGradient>
+  <linearGradient id="accent-strip" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#9c84ff" stop-opacity="0.85"/>
+    <stop offset="50%" stop-color="#00b8d9" stop-opacity="0.85"/>
+    <stop offset="100%" stop-color="#7ee787" stop-opacity="0.85"/>
+  </linearGradient>
+  <radialGradient id="zone-rust" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#9c84ff" stop-opacity="0.20"/>
+    <stop offset="100%" stop-color="#9c84ff" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="zone-valkey" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#00b8d9" stop-opacity="0.20"/>
+    <stop offset="100%" stop-color="#00b8d9" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="zone-streams" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#7ee787" stop-opacity="0.20"/>
+    <stop offset="100%" stop-color="#7ee787" stop-opacity="0"/>
+  </radialGradient>
+  <marker id="arrow" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="strokeWidth">
+    <path d="M 0 0 L 12 7 L 0 14 Z" fill="#00b8d9"/>
+  </marker>
+</defs>
+
+<rect width="1280" height="480" fill="url(#bg)"/>
+
+<!-- Top accent strip -->
+<rect x="0" y="0" width="1280" height="6" fill="url(#accent-strip)"/>
+
+<!-- Title block — left third -->
+<g class="h">
+  <text x="60" y="92" font-size="44" font-weight="700" fill="#eeeeee">Valkey from Zero</text>
+  <text x="60" y="132" font-size="20" fill="#a5d6ff" letter-spacing="0.05em">Rust for Data Engineering · redis-rs · Streams · ConnectionManager · Sentinel</text>
+  <text x="60" y="162" font-size="14" fill="#7ee787" letter-spacing="0.10em" font-weight="700">5 MODULES · 25 LESSONS · 5 RUNTIME CONTRACTS</text>
+</g>
+
+<!-- Three pipeline stops, evenly spaced -->
+<!-- Stop 1: rust (redis-rs) at x=240, y=300 -->
+<circle cx="240" cy="300" r="120" fill="url(#zone-rust)"/>
+<g id="stop-rust">
+  <rect x="160" y="240" width="160" height="120" rx="8" fill="#0e1726" stroke="#9c84ff" stroke-width="3"/>
+  <rect x="160" y="240" width="160" height="32" rx="8" fill="#1a1d23" stroke="#9c84ff" stroke-width="2.5"/>
+  <text x="178" y="262" class="m" font-size="14" font-weight="700" fill="#9c84ff">RS</text>
+  <text x="240" y="300" text-anchor="middle" class="m" font-size="14" font-weight="700" fill="#b8acff">redis-rs</text>
+  <text x="240" y="324" text-anchor="middle" class="m" font-size="14" fill="#b8acff">+ tokio</text>
+  <text x="240" y="356" text-anchor="middle" class="label" font-size="14" font-weight="700" fill="#9c84ff">RUST</text>
+</g>
+
+<!-- Stop 2: valkey at x=600, y=300 -->
+<circle cx="600" cy="300" r="120" fill="url(#zone-valkey)"/>
+<g id="stop-valkey">
+  <rect x="520" y="240" width="160" height="120" rx="8" fill="#0e1726" stroke="#00b8d9" stroke-width="3"/>
+  <rect x="520" y="240" width="160" height="32" rx="8" fill="#1a1d23" stroke="#00b8d9" stroke-width="2.5"/>
+  <circle cx="538" cy="256" r="5" fill="#ff5630"/>
+  <circle cx="555" cy="256" r="5" fill="#ffab00"/>
+  <circle cx="572" cy="256" r="5" fill="#36b37e"/>
+  <text x="600" y="296" text-anchor="middle" class="m" font-size="16" font-weight="700" fill="#a5d6ff">valkey 8</text>
+  <text x="600" y="320" text-anchor="middle" class="m" font-size="14" fill="#a5d6ff">RESP3 · AOF</text>
+  <text x="600" y="356" text-anchor="middle" class="label" font-size="14" font-weight="700" fill="#00b8d9">SERVER</text>
+</g>
+
+<!-- Stop 3: streams at x=960, y=300 -->
+<circle cx="960" cy="300" r="120" fill="url(#zone-streams)"/>
+<g id="stop-streams">
+  <rect x="880" y="240" width="160" height="120" rx="8" fill="#0e1726" stroke="#7ee787" stroke-width="3.5"/>
+  <rect x="880" y="240" width="160" height="32" rx="8" fill="#1a1d23" stroke="#7ee787" stroke-width="2.5"/>
+  <text x="898" y="262" class="m" font-size="14" font-weight="700" fill="#7ee787">XADD</text>
+  <text x="960" y="296" text-anchor="middle" class="m" font-size="14" font-weight="700" fill="#7ee787">XREADGROUP</text>
+  <text x="960" y="320" text-anchor="middle" class="m" font-size="14" fill="#7ee787">+ XACK</text>
+  <text x="960" y="356" text-anchor="middle" class="label" font-size="14" font-weight="700" fill="#36b37e">STREAMS</text>
+</g>
+
+<!-- Arrows between stops -->
+<line x1="330" y1="300" x2="510" y2="300" stroke="#00b8d9" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="690" y1="300" x2="870" y2="300" stroke="#00b8d9" stroke-width="3" marker-end="url(#arrow)"/>
+
+<!-- Modules pillar — right edge -->
+<g id="modules-pillar">
+  <rect x="1100" y="200" width="140" height="200" rx="10" fill="#0e1726" stroke="#9c84ff" stroke-width="3"/>
+  <rect x="1100" y="200" width="140" height="36" rx="10" fill="#3a2e6a" stroke="#9c84ff" stroke-width="2"/>
+  <text x="1170" y="224" text-anchor="middle" class="h" font-size="16" font-weight="700" fill="#eeeeee">Modules</text>
+  <line x1="1110" y1="252" x2="1230" y2="252" stroke="#9c84ff" stroke-width="1.5" opacity="0.5"/>
+  <text x="1118" y="276" class="m" font-size="13" fill="#b8acff">1 · strings · TTL</text>
+  <text x="1118" y="298" class="m" font-size="13" fill="#b8acff">2 · sets · zsets</text>
+  <text x="1118" y="320" class="m" font-size="13" fill="#b8acff">3 · streams · CG</text>
+  <text x="1118" y="342" class="m" font-size="13" fill="#b8acff">4 · pipe · Lua</text>
+  <text x="1118" y="364" class="m" font-size="13" fill="#b8acff">5 · ops · HA</text>
+  <text x="1170" y="390" text-anchor="middle" class="label" font-size="11" fill="#7ee787">course #11</text>
+</g>
+
+<!-- Bottom contracts strip — single line -->
+<g id="contracts-strip">
+  <rect x="60" y="420" width="1160" height="36" rx="6" fill="#161b22" stroke="#7ee787" stroke-width="2" fill-opacity="0.85"/>
+  <text x="80" y="444" class="h" font-size="14" font-weight="700" fill="#7ee787">Provable contracts:</text>
+  <text x="240" y="444" class="m" font-size="14" fill="#eeeeee">SET/GET round-trip · INCR == prev+1 · TTL ∈ [0,N] · HGETALL == HSET · XACK after commit</text>
+</g>
+
+<!-- GRID PROTOCOL MANIFEST
+  template: HERO (README banner)
+  canvas: 1280x480
+  zones: rust@(240,300) | valkey@(600,300) | streams@(960,300) | modules-pillar@(1100..1240, 200..400)
+  text_elements: 21
+  palette_colors: [#0e1726, #1a2540, #1a1d23, #161b22, #9c84ff, #b8acff, #00b8d9, #a5d6ff, #36b37e, #7ee787, #ffab00, #ff5630, #3a2e6a, #eeeeee]
+  bounds_check: all elements within 0,0 → 1280,480
+-->
+</svg>

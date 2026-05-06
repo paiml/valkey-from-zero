@@ -1,0 +1,22 @@
+[package]
+name = "valkey-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+description = "Connection helper + four runtime contracts demonstrating the redis-rs / Valkey toolchain"
+
+[dependencies]
+anyhow.workspace = true
+tokio.workspace = true
+redis.workspace = true
+
+[[bin]]
+name = "valkey-demo"
+path = "src/main.rs"
+
+[lib]
+path = "src/lib.rs"
