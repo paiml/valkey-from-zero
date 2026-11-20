@@ -7,7 +7,7 @@ metadata:
     (Coursera "Valkey from Zero" course companion, course #11 of the Rust for
     Data Engineering specialization).
 
-    Four named runtime invariants asserted inside the Module-1 demo functions
+    Four named runtime invariants asserted inside the valkey-core demo functions
     (set_get_round_trip, incr_monotonic, set_with_ttl, hash_round_trip). Each
     contract is asserted at runtime in crates/valkey-core/src/lib.rs and
     proved by the integration tests in tests/integration.rs (which require a
