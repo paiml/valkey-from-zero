@@ -11,7 +11,7 @@ services:
       - valkey_data:/data
     command:
       - "valkey-server"
-      # AOF on so the persistence lessons (Module 5.1) have something to point
+      # AOF on so AOF persistence has something to point
       # at. The performance hit at this dataset size is irrelevant; turning it
       # off is one config change away.
       - "--appendonly"
@@ -21,7 +21,7 @@ services:
       # default to compare against.
       - "--appendfsync"
       - "everysec"
-      # Reasonable max-memory + LRU eviction so the cache lessons (Module 1)
+      # Reasonable max-memory + LRU eviction so key expiry and eviction
       # have observable eviction without needing to fill 8GB of fake data.
       - "--maxmemory"
       - "256mb"

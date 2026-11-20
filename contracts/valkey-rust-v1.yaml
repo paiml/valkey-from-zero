@@ -125,7 +125,7 @@ falsification_tests:
 qa_gate:
   id: F-VALKEY-001
   name: 'Valkey Core Contract'
-  description: 'Four runtime invariants asserted in the Module-1 demo functions of crates/valkey-core after a successful round-trip against a live Valkey instance.'
+  description: 'Four runtime invariants asserted in the valkey-core demo functions of crates/valkey-core after a successful round-trip against a live Valkey instance.'
   checks:
     - 'set_get_round_trip'
     - 'incr_monotonic'
