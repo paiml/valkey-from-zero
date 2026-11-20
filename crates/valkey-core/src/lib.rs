@@ -1,5 +1,5 @@
 //! Connection helper plus four named runtime contracts (C1–C4) covering the
-//! Module 1 primitives: SET/GET, INCR, SET-with-TTL, and HSET/HGETALL.
+//! Core primitives: SET/GET, INCR, SET-with-TTL, and HSET/HGETALL.
 //!
 //! Each public async fn enforces its contract via an `assert!` immediately
 //! after the round-trip — same pattern the duckdb-from-zero capstone uses,

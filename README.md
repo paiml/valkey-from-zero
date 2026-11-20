@@ -31,8 +31,7 @@ operational HA — all built against Valkey 8 from async Rust via `redis-rs`.
     make test        # cargo test --release (lib unit + integration)
 
 `make up` is idempotent. The container has AOF persistence enabled and a
-256 MB LRU eviction cap so the cache lessons (Module 1) and persistence
-lessons (Module 5.1) have something observable.
+256 MB LRU eviction cap, so key expiry and eviction have something observable.
 
 ## Installation
 
